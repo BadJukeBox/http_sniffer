@@ -2,7 +2,9 @@ from scapy.sendrecv import AsyncSniffer
 from scapy.layers import http
 from scapy.layers.inet import TCP
 from threading import Lock
+import utils
 
+logger = utils.get_logger(__name__)
 
 class HTTPPacketCollector:
     """
@@ -42,6 +44,7 @@ class HTTPPacketCollector:
         Creates a sniffer and attempts to start it if one does not exist.
         """
         if not self.sniffer:
+            logger.info(f'Starting packet listener with interface: {interface} listening for traffic on port 80.')
             self.sniffer = AsyncSniffer(iface=interface, prn=self.process_packet, filter="tcp port 80")
             self.sniffer.start()
 
@@ -51,6 +54,7 @@ class HTTPPacketCollector:
         Stop the sniff.
         """
         if self.sniffer:
+            logger.info(f'Stopping packet listener.')
             self.sniffer.stop()
 
     def clear_current_collection(self):
@@ -60,6 +64,7 @@ class HTTPPacketCollector:
         during the process.
         """
         self.lock.acquire()
+        logger.info('Clearing current HTTP packet collection data.')
         self.collection = HTTPEventCollection()
         self.lock.release()
 

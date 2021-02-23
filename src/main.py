@@ -3,13 +3,17 @@ from statistics_management import StatisticsManager
 from alerting import AlertManager
 from argparse import ArgumentParser
 from time import sleep
+import utils
 
+logger = utils.get_logger(__name__)
 
 def main(args):
     interval_count = 0
     statistics_check_interval_seconds = 10
     alert_check_interval = 12
-
+    logger.info(f'Starting program and initializing packet collector.')
+    logger.debug(f'Starting program with check interval: {statistics_check_interval_seconds} and alert interval:'
+                 f'{alert_check_interval}.')
     packet_collector = HTTPPacketCollector()
     packet_collector.start_packet_collection(args.interface if args.interface else None)
     alerts = AlertManager(args.alert_trigger_threshold)
@@ -23,6 +27,7 @@ def main(args):
         statistics.create_and_show_traffic_statistics(packet_collector.collection)
         packet_collector.clear_current_collection()
         if interval_count == alert_check_interval:
+            logger.debug(f'Reached alert check interval of: {alert_check_interval}')
             alerts.determine_alert_state(statistics.average_hits_last_two_minutes)
             interval_count = 0
         alerts.show_alerts()

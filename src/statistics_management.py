@@ -1,5 +1,7 @@
 from os import system
+import utils
 
+logger = utils.get_logger(__name__)
 
 class StatisticsManager:
     """
@@ -66,7 +68,11 @@ class StatisticsManager:
         """
         self.hits_last_two_minutes.append(recent_hits_total)
         if len(self.hits_last_two_minutes) >= self.alert_check_interval:
+            logger.info('Calculating average for the past alert check interval.')
+            logger.debug(f'Current hits for last alert interval: {self.hits_last_two_minutes}. Current alert check'
+                         f'inteval: {self.alert_check_interval}')
             self.average_hits_last_two_minutes = sum(self.hits_last_two_minutes)/len(self.hits_last_two_minutes)
+            logger.info(f'Average hits for the last alert check interval: {self.average_hits_last_two_minutes}')
             self.hits_last_two_minutes = []
 
     def show_all_statistics(self):
@@ -96,10 +102,12 @@ class StatisticsManager:
         already visited. Site hit/total call counters are then updated.
         """
         for request in http_request_list:
+            logger.debug(f'pruning path: {request.path}')
             if request.path == '/':
                 section = request.path
             else:
                 section = '/'.join(request.path.split('/')[:2])
+            logger.debug(f'New section: {section}')
             if request.host not in self.sites_recent:
                 self.sites_recent[request.host] = {
                     'sections': [section],
@@ -119,8 +127,9 @@ class StatisticsManager:
         :return: None
         Checks for bad response codes (simply >=400) and decides whether the response indicated a successful call.
         """
-        for request in http_response_list:
-            if request.status_code >= 400:
+        for response in http_response_list:
+            logger.debug(f'Response code: {response.status_code}.')
+            if response.status_code >= 400:
                 self.total_failures_count += 1
             else:
                 self.total_successes_count += 1
@@ -134,6 +143,7 @@ class StatisticsManager:
         if not self.sites_recent:
             return 'No sites visited in the last 10 seconds.\n'
 
+        logger.debug(f'visited sites: {self.sites_recent}')
         most_visited_site = sorted(self.sites_recent, key=lambda site: self.sites_recent[site]['site_hit_count'], reverse=True)[0]
         recent_sites_str = f'Most visited site in the last 10 seconds: {most_visited_site}.\n' \
                            f'{most_visited_site} sections hit: \n'
@@ -176,6 +186,7 @@ class StatisticsManager:
         if not self.sites_total:
             return 'No sites visited yet.'
 
+        logger.debug(f'All sites visited: {self.sites_total.keys()}')
         descending_top_sites = sorted(self.sites_total.items(), key=lambda site_total: site_total[1], reverse=True)
 
         if len(self.sites_total) < top_n:

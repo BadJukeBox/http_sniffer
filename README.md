@@ -56,3 +56,9 @@ By default, the program will calculate statistics in intervals of 10 seconds, an
 
 In terms of overall program design, the main improvement I would implement going forward is to let the user also configure the statistics interval and
 the alert interval. this would allow for the program to be configured for hosts that need to react to alerts faster or slower with ease.
+
+Personally things I would do given more time:
+- Add a thread to allow the user to escape the program by pressing `q` much like some console programs do now.
+- Further testing.
+- Make the program work on all operating systems (developed and tested mostly on linux)
+- Use seq/ack to tie calls and responses together so that the program could provide site-level statistics of failure vs. success
