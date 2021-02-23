@@ -6,20 +6,23 @@ from time import sleep
 
 
 def main(args):
-    alert_timer = 0  # every 12 10 second waits we'll also check for the 2m mark
+    alert_timer = 0
+    statistics_check_interval_seconds = 10
+    alert_check_interval = 12
+
     packet_collector = HTTPPacketCollector()
     packet_collector.start_packet_collection(args.interface if args.interface else None)
-    alerts = AlertManager(int(args.alert_trigger_threshold))
-    statistics = StatisticsManager()
+    alerts = AlertManager(args.alert_trigger_threshold)
+    statistics = StatisticsManager(alert_check_interval)
+
     statistics.show_all_statistics()
+
     while True:
-        sleep(10)
+        sleep(statistics_check_interval_seconds)
         alert_timer += 1
-        statistics.calculate_statistics(packet_collector.collection)
-        statistics.show_all_statistics()
-        statistics.clear_recent_statistics()
+        statistics.create_and_show_traffic_statistics(packet_collector.collection)
         packet_collector.clear_current_collection()
-        if alert_timer == 1:
+        if alert_timer == alert_check_interval:
             alerts.determine_alert_state(statistics.average_hits_last_two_minutes)
             alert_timer = 0
         alerts.show_alerts()

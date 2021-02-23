@@ -11,14 +11,18 @@ class StatisticsManager:
         total_successes_count (int): The total requests successes recorded during the lifetime of the program.
         total_method_counts (dict): The total number of calls recorded during the lifetime of the program broken down
         by the request method. IE: {'GET': 10, 'POST': 10}
+
         hits_last_two_minutes (list<int>): Holds the last 12 10 second sequences in order to calculate the average hits for
         the past 2 minutes. Each time a new 10 second window is added, the first is removed, in a queue fashion.
+        average_hits_last_two_minutes (int): The average traffic hits for the last two minutes.
+        alert_check_interval (int): The interval in which average is calculated for alert purposes.
+
         sites_recent (dict): A representation of the current set of requests, recording a host, it's hits, and the
         sections that were hit. IE: {'mysite.com': {'site_hit_count': 10, 'sections': ['/section1', '/section2', ',']}}
         sites_total (dict): A representation of the sites hit  during the lifetime of the program, and their hit counts.
         IE: {'mysite.com': 10, 'mysite2.com': 1}
     """
-    def __init__(self):
+    def __init__(self, alert_check_interval):
         self.total_calls_count = 0
         self.total_failures_count = 0
         self.total_successes_count = 0
@@ -26,9 +30,15 @@ class StatisticsManager:
 
         self.hits_last_two_minutes = []
         self.average_hits_last_two_minutes = 0
+        self.alert_check_interval = alert_check_interval
 
         self.sites_recent = {}
         self.sites_total = {}
+
+    def create_and_show_traffic_statistics(self, packet_collection):
+        self.calculate_statistics(packet_collection)
+        self.show_all_statistics()
+        self.clear_recent_statistics()
 
     def calculate_statistics(self, collection):
         """
@@ -55,9 +65,8 @@ class StatisticsManager:
         Add recent hits total, and if we have hit our threshold for calculating average, calculate and clear the list.
         """
         self.hits_last_two_minutes.append(recent_hits_total)
-        print(self.hits_last_two_minutes)
-        if len(self.hits_last_two_minutes) >= 1:
-            self.average_hits_last_two_minutes = int(sum(self.hits_last_two_minutes)/len(self.hits_last_two_minutes))
+        if len(self.hits_last_two_minutes) >= self.alert_check_interval:
+            self.average_hits_last_two_minutes = sum(self.hits_last_two_minutes)/len(self.hits_last_two_minutes)
             self.hits_last_two_minutes = []
 
     def show_all_statistics(self):
@@ -82,7 +91,7 @@ class StatisticsManager:
         """
         :param http_request_list: (list<HTTPRequestPacket>) the request packets gathered in the last 10 seconds.
         :return: None
-        Checks the request path, and separates it into only the initial section (the first piece of the bath before the
+        Checks the request path, and separates it into only the initial section (the first piece of the path before the
         second '/' ie: site.com/section/2/ section = /section. The section is then added to a list for each host if not
         already visited. Site hit/total call counters are then updated.
         """
