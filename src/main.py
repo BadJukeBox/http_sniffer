@@ -6,7 +6,7 @@ from time import sleep
 
 
 def main(args):
-    alert_timer = 0
+    interval_count = 0
     statistics_check_interval_seconds = 10
     alert_check_interval = 12
 
@@ -19,12 +19,12 @@ def main(args):
 
     while True:
         sleep(statistics_check_interval_seconds)
-        alert_timer += 1
+        interval_count += 1
         statistics.create_and_show_traffic_statistics(packet_collector.collection)
         packet_collector.clear_current_collection()
-        if alert_timer == alert_check_interval:
+        if interval_count == alert_check_interval:
             alerts.determine_alert_state(statistics.average_hits_last_two_minutes)
-            alert_timer = 0
+            interval_count = 0
         alerts.show_alerts()
 
 
