@@ -1,7 +1,7 @@
-from src.collection import HTTPPacketCollector
-from src.statistics_management import StatisticsManager
-from src.alerting import AlertManager
-import src.utils as utils
+from http_traffic_monitor.src.collection import HTTPPacketCollector
+from http_traffic_monitor.src.statistics_management import StatisticsManager
+from http_traffic_monitor.src.alerting import AlertManager
+import http_traffic_monitor.src.utils as utils
 
 from argparse import ArgumentParser
 from time import sleep
