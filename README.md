@@ -5,6 +5,7 @@ these intervals is checked to determine if there has been an excess amount of tr
 If the average traffic crosses a certain user-inputted threshold the program will generate an alert.
 
 #####Note: This program uses the scapy module. More information about scapy can be found [here](https://scapy.net/). Scapy docs can be found [here](https://scapy.readthedocs.io/en/latest/).
+#####Note: This programs tests are run with pytest. More information about pytest can be found [here](https://docs.pytest.org/en/stable/).
 
 Your Program page will look something like this:
 ```
@@ -60,5 +61,5 @@ the alert interval. this would allow for the program to be configured for hosts 
 Personally things I would do given more time:
 - Add a thread to allow the user to escape the program by pressing `q` much like some console programs do now.
 - Further testing.
-- Make the program work on all operating systems (developed and tested mostly on linux)
+- Make the program work on all operating systems (developed and tested on linux)
 - Use seq/ack to tie calls and responses together so that the program could provide site-level statistics of failure vs. success
