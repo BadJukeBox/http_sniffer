@@ -1,5 +1,6 @@
 import logging
 
+
 def get_logger(module):
     """
     :param module: (module) the module name (__name__) of the code calling this function
