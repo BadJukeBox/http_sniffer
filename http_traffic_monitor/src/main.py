@@ -3,9 +3,10 @@ from statistics_management import StatisticsManager
 from alerting import AlertManager
 from argparse import ArgumentParser
 from time import sleep
-import utils
+import http_traffic_monitor.src.utils as utils
 
 logger = utils.get_logger(__name__)
+
 
 def main(args):
     interval_count = 0

@@ -1,8 +1,9 @@
 from time import localtime, strftime
 import logging
-import utils
+import http_traffic_monitor.src.utils as utils
 
 logger = utils.get_logger(__name__)
+
 
 class AlertManager:
     """

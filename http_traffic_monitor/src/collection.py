@@ -2,9 +2,10 @@ from scapy.sendrecv import AsyncSniffer
 from scapy.layers import http
 from scapy.layers.inet import TCP
 from threading import Lock
-import utils
+import http_traffic_monitor.src.utils as utils
 
 logger = utils.get_logger(__name__)
+
 
 class HTTPPacketCollector:
     """
@@ -23,6 +24,27 @@ class HTTPPacketCollector:
         self.collection = HTTPEventCollection()
         self.lock = Lock()
 
+    def start_packet_collection(self, interface=None):
+        """
+        :param interface: (str) The interface being listened on, None is default which will listen on all interfaces.
+        :return: None
+        Creates a sniffer and attempts to start it if one does not exist.
+        """
+        if not self.sniffer:
+            logger.info(f'Starting packet listener with interface: {interface} listening for traffic on port 80.')
+            self.sniffer = AsyncSniffer(iface=interface, prn=self.process_packet, filter="tcp port 80")
+        if not self.sniffer.running:
+            self.sniffer.start()
+
+    def stop_packet_collection(self):
+        """
+        :return: None
+        Stop the sniff.
+        """
+        if self.sniffer.running:
+            logger.info(f'Stopping packet listener.')
+            self.sniffer.stop()
+
     def process_packet(self, packet):
         """
         :param packet: ('scapy.layers.l2.Ether)
@@ -36,26 +58,6 @@ class HTTPPacketCollector:
         if packet.haslayer(http.HTTPResponse):
             self.collection.add_response_packet(HTTPResponsePacket(packet.Status_Code, packet[TCP].seq))
         self.lock.release()
-
-    def start_packet_collection(self, interface=None):
-        """
-        :param interface: (str) The interface being listened on, None is default which will listen on all interfaces.
-        :return: None
-        Creates a sniffer and attempts to start it if one does not exist.
-        """
-        if not self.sniffer:
-            logger.info(f'Starting packet listener with interface: {interface} listening for traffic on port 80.')
-            self.sniffer = AsyncSniffer(iface=interface, prn=self.process_packet, filter="tcp port 80")
-            self.sniffer.start()
-
-    def stop_packet_collection(self):
-        """
-        :return: None
-        Stop the sniff.
-        """
-        if self.sniffer:
-            logger.info(f'Stopping packet listener.')
-            self.sniffer.stop()
 
     def clear_current_collection(self):
         """

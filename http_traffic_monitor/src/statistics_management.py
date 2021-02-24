@@ -1,7 +1,8 @@
 from os import system
-import utils
+import http_traffic_monitor.src.utils as utils
 
 logger = utils.get_logger(__name__)
+
 
 class StatisticsManager:
     """
@@ -186,7 +187,7 @@ class StatisticsManager:
         if not self.sites_total:
             return 'No sites visited yet.'
 
-        logger.debug(f'All sites visited: {self.sites_total.keys()}')
+        logger.debug(f'Top 5 sites visited: {self.sites_total.keys()}')
         descending_top_sites = sorted(self.sites_total.items(), key=lambda site_total: site_total[1], reverse=True)
 
         if len(self.sites_total) < top_n:
