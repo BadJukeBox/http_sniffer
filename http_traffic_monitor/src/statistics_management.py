@@ -109,15 +109,16 @@ class StatisticsManager:
             else:
                 section = '/'.join(request.path.split('/')[:2])
             logger.debug(f'New section: {section}')
-            if request.host not in self.sites_recent:
-                self.sites_recent[request.host] = {
+            host = request.host.replace('www.', '')
+            if host not in self.sites_recent:
+                self.sites_recent[host] = {
                     'sections': [section],
                     'site_hit_count': 1
                 }
             else:
-                if section not in self.sites_recent[request.host]['sections']:
-                    self.sites_recent[request.host]['sections'].append(section)
-                self.sites_recent[request.host]['site_hit_count'] += 1
+                if section not in self.sites_recent[host]['sections']:
+                    self.sites_recent[host]['sections'].append(section)
+                self.sites_recent[host]['site_hit_count'] += 1
 
             self.total_method_counts[request.method] = self.total_method_counts.get(request.method, 0) + 1
             self.total_calls_count += 1

@@ -46,6 +46,10 @@ The top 5 sites hit over the life of the program are also shown with their respe
 Finally, alert info is shown, including if an alert triggered recently, if there is an active alert, and past alerts. Note that past alerts are only shown to the past 5, and are otherwise logged to a file.
 
 #How to Use:
+
+######Note: You may need to append to your PYTHONPATH to run the program if you experience issues.
+######Note: The program will need sufficient permissions to listen on interfaces and write to /var/log/.
+
 There are a few flags you can pass to the program, as well as their defaults:
 - `-t, --alert-trigger-threshold`: This is the threshold that, if average traffic crosses this value, will trigger an alert.
 There is no default value and this is the only required value.
@@ -59,8 +63,6 @@ Included is a dockerfile (alpine) that can be used to run the program if desired
 2. enter a shell with `docker exec -it <container-name> /bin/sh`
 3. `python3 /usr/local/bin/http_traffic_monitor/main.py -t <threshold>`
 4. start another session in the container and use `curl` or the python `requests` module to generate traffic.
-
-######Note: You may need to append to your PYTHONPATH to run the program if you experience issues.
 
 #Suggested Improvements
 
