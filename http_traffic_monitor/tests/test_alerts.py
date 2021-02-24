@@ -2,9 +2,10 @@ from http_traffic_monitor.src.collection import HTTPPacketCollector
 from http_traffic_monitor.src.statistics_management import StatisticsManager
 from http_traffic_monitor.src.alerting import AlertManager
 import requests
+import unittest
 
 
-class TestAlert:
+class TestAlert(unittest.TestCase):
     def setUp(self):
         self.packet_collector = HTTPPacketCollector()
 

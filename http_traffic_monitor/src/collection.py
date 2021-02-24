@@ -2,7 +2,7 @@ from scapy.sendrecv import AsyncSniffer
 from scapy.layers import http
 from scapy.layers.inet import TCP
 from threading import Lock
-import http_traffic_monitor.src.utils as utils
+import src.utils as utils
 
 logger = utils.get_logger(__name__)
 

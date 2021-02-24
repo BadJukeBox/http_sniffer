@@ -59,6 +59,9 @@ Included is a dockerfile (alpine) that can be used to run the program if desired
 2. enter a shell with `docker exec -it <container-name> /bin/sh`
 3. `python3 /usr/local/bin/http_traffic_monitor/main.py -t <threshold>`
 4. start another session in the container and use `curl` or the python `requests` module to generate traffic.
+
+######Note: You may need to append to your PYTHONPATH to run the program if you experience issues.
+
 #Suggested Improvements
 
 In terms of overall program design, the main improvement I would implement going forward is to let the user also configure the statistics interval and
@@ -74,5 +77,5 @@ Personally things I would do given more time:
 ##Bugs
 
 I've noticed two bugs to date that I have not been able to track down given the time.
-- Very rarely the program will stop refreshing the screen, exiting and restarting fixes it, and the timing has been random.
+- Very rarely the program will stop refreshing the screen, CRTL+C seems to refresh the screen.
 - (This has happened once) the total successes will outnumber the total requests. Wasn't able to reproduce but would be fun to look into.

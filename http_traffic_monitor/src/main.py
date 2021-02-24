@@ -1,9 +1,11 @@
-from http_traffic_monitor.src.collection import HTTPPacketCollector
-from http_traffic_monitor.src.statistics_management import StatisticsManager
-from http_traffic_monitor.src.alerting import AlertManager
+from src.collection import HTTPPacketCollector
+from src.statistics_management import StatisticsManager
+from src.alerting import AlertManager
+import src.utils as utils
+
 from argparse import ArgumentParser
 from time import sleep
-import http_traffic_monitor.src.utils as utils
+from os import system
 
 logger = utils.get_logger(__name__)
 
@@ -23,15 +25,21 @@ def main(args):
     statistics.show_all_statistics()
 
     while True:
-        sleep(statistics_check_interval_seconds)
-        interval_count += 1
-        statistics.create_and_show_traffic_statistics(packet_collector.collection)
-        packet_collector.clear_current_collection()
-        if interval_count == alert_check_interval:
-            logger.debug(f'Reached alert check interval of: {alert_check_interval}')
-            alerts.determine_alert_state(statistics.average_hits_last_two_minutes)
-            interval_count = 0
-        alerts.show_alerts()
+        try:
+            sleep(statistics_check_interval_seconds)
+            interval_count += 1
+            statistics.create_and_show_traffic_statistics(packet_collector.collection)
+            packet_collector.clear_current_collection()
+            if interval_count == alert_check_interval:
+                logger.debug(f'Reached alert check interval of: {alert_check_interval}')
+                alerts.determine_alert_state(statistics.average_hits_last_two_minutes)
+                interval_count = 0
+            alerts.show_alerts()
+        except KeyboardInterrupt:
+            logger.info('Exiting Program.')
+            packet_collector.stop_packet_collection()
+            system('clear')
+            exit(0)
 
 
 if __name__ == '__main__':
