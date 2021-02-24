@@ -53,6 +53,12 @@ There is no default value and this is the only required value.
 - `-i, --interface`: The interface the program will listen on for traffic. The default is none, in which case the program will listen on all interfaces.
 
 By default, the program will calculate statistics in intervals of 10 seconds, and check for an alert every 2 minutes.
+
+Included is a dockerfile (alpine) that can be used to run the program if desired.
+1. Start the container
+2. enter a shell with `docker exec -it <container-name> /bin/sh`
+3. `python3 /usr/local/bin/http_traffic_monitor/main.py -t <threshold>`
+4. start another session in the container and use `curl` or the python `requests` module to generate traffic.
 #Suggested Improvements
 
 In terms of overall program design, the main improvement I would implement going forward is to let the user also configure the statistics interval and
@@ -60,6 +66,13 @@ the alert interval. this would allow for the program to be configured for hosts 
 
 Personally things I would do given more time:
 - Add a thread to allow the user to escape the program by pressing `q` much like some console programs do now.
-- Further testing.
-- Make the program work on all operating systems (developed and tested on linux)
-- Use seq/ack to tie calls and responses together so that the program could provide site-level statistics of failure vs. success
+- Further testing. There is currently light unit testing, but the program could do with some better tests.
+- Make the program work on all operating systems (developed and tested on linux).
+- Use seq/ack to tie calls and responses together so that the program could provide site-level statistics of failure vs. success.
+- Make running the program easier, IE: add a "setup" that makes an alias for you, etc
+
+##Bugs
+
+I've noticed two bugs to date that I have not been able to track down given the time.
+- Very rarely the program will stop refreshing the screen, exiting and restarting fixes it, and the timing has been random.
+- (This has happened once) the total successes will outnumber the total requests. Wasn't able to reproduce but would be fun to look into.
